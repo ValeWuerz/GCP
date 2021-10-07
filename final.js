@@ -8,7 +8,7 @@ let pos3;
 let replenishment_start;
 let replenishment_end;
 let mode= "slide3";
-
+let status = []
 
 xlsxFile('./data.xlsx').then((rows) => {
  console.table(rows);
@@ -40,11 +40,17 @@ for(var i=1;i<payload.length;i++){
         pos3 = payload[i]["state"]; 
    
        }
+       else if (payload[i]["position"]==="pos4") {
+        pos4 = payload[i]["state"]; 
+           
+       }
        else{
            console.log("something went wrong");
        }
 //fill pos1,pos2,pos3 with current payload
 
+
+//Here check for specific machine/system and fill variable with content of payload f.e. var group = CYW
 let current_state = [pos1, pos2, pos3];
 
 console.info(current_state);
