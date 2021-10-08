@@ -1,24 +1,24 @@
 const xlsxFile = require('read-excel-file/node');
- 
+const register = require('./register.json')
+
 
 let payload = [];
-let pos1;
-let pos2;
-let pos3;
+
 let replenishment_start;
 let replenishment_end;
 let mode= "slide3";
-let status = []
 
-xlsxFile('./data.xlsx').then((rows) => {
+
+xlsxFile('./data_modified.xlsx').then((rows) => {
  console.table(rows);
  
  for (i in rows){
     for (j in rows[i]){
         payload[i] = {
-            time: rows[i][0],
-            position: rows[i][1],
-            state: rows[i][2]
+            time: rows[i][1],
+            position: rows[i][3],
+            state: rows[i][4],
+            channel: rows[i][2]
 
         }
     }
@@ -26,40 +26,54 @@ xlsxFile('./data.xlsx').then((rows) => {
 }).then(()=>{
 //insert data from excel
 let last_state;
-
+let states=register
 for(var i=1;i<payload.length;i++){
+    let chan= payload[i]["channel"]
+    let location= states.findIndex(a=>a.channel == chan)
+    
+
+        if (payload[i]["position"]==1){
+            states[location]["current_state"][0] = payload[i]["state"];
+           }
+           else if(payload[i]["position"]==2){
+            states[location]["current_state"][1] = payload[i]["state"]; 
+       
+       }
+           else if(payload[i]["position"]==3){
+            states[location]["current_state"][2] = payload[i]["state"]; 
+       
+           }
+           else if (payload[i]["position"]===4) {
+            states[location]["current_state"][3] = payload[i]["state"]; 
+               
+           }
+           else{
+               console.log("something went wrong");
+           }
+    
+
+//If there is no channel to be located in states with this name (finder=-1)  => create one
+
    // console.log("LAST_STATE: "+last_state);
-    if (payload[i]["position"]==='pos1'){
-        pos1 = payload[i]["state"];
-       }
-       else if(payload[i]["position"]==="pos2"){
-        pos2 = payload[i]["state"]; 
-   
-   }
-       else if(payload[i]["position"]==="pos3"){
-        pos3 = payload[i]["state"]; 
-   
-       }
-       else if (payload[i]["position"]==="pos4") {
-        pos4 = payload[i]["state"]; 
-           
-       }
-       else{
-           console.log("something went wrong");
-       }
+
 //fill pos1,pos2,pos3 with current payload
 
 
 //Here check for specific machine/system and fill variable with content of payload f.e. var group = CYW
-let current_state = [pos1, pos2, pos3];
+let pos1 = states[location]["current_state"][0]
+let pos2 = states[location]["current_state"][1]
+let pos3 = states[location]["current_state"][2]
+let pos4 = states[location]["current_state"][3]
 
-console.info(current_state);
 if (mode == "slide3") {
+let current_state = [pos1, pos2, pos3]
+let compare = current_state.toString()
+console.info(current_state);
     
 
 if (pos1, pos2, pos3 != undefined){
 
-    let compare = current_state.toString()
+    
     if (compare == "1,0,1" || compare== "1,1,0" || compare== "1,0,0" || compare =="0,1,0") {
 
     console.log("irregular state");
@@ -78,6 +92,8 @@ if (pos1, pos2, pos3 != undefined){
             console.log("State changed from partly empty to filled");
             last_state="1,1,1"
             replenishment_end = payload[i]["time"]
+            console.log("STATES:  "+states);
+
             rep_time();
         }
         //check if last state was 0,1,1
@@ -106,6 +122,7 @@ if (pos1, pos2, pos3 != undefined){
         console.log("State changed from partly empty to partly filled");
             last_state="0,1,1"
             replenishment_end = payload[i]["time"]
+
             rep_time();
         }
         else{
