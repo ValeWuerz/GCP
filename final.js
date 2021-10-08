@@ -164,16 +164,18 @@ else{
     console.log("there are undefined slots");
 }
 }
-else if (mode=="slide1") {
+else if (states[location]["mode"]=="slide1") {
     
 }
-else if (mode=="slide2") {
+else if (states[location]["mode"]=="slide2") {
+    let current_state = [pos1, pos2]
+    let compare = current_state.toString()
+    console.info(current_state);
+}
+else if (states[location]["mode"]=="slide4") {
     
 }
-else if (mode=="slide4") {
-    
-}
-else if (mode=="bed1") {
+else if (states[location]["mode"]=="bed1") {
     
 }
 
