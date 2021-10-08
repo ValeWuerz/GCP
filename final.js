@@ -25,7 +25,6 @@ xlsxFile('./data_modified.xlsx').then((rows) => {
 }
 }).then(()=>{
 //insert data from excel
-let last_state;
 let states=register
 for(var i=1;i<payload.length;i++){
     let chan= payload[i]["channel"]
@@ -54,7 +53,7 @@ for(var i=1;i<payload.length;i++){
 
 //If there is no channel to be located in states with this name (finder=-1)  => create one
 
-   // console.log("LAST_STATE: "+last_state);
+   // console.log("LAST_STATE: "+states[location]["last_state"]);
 
 //fill pos1,pos2,pos3 with current payload
 
@@ -83,14 +82,14 @@ if (pos1, pos2, pos3 != undefined){
     else if(compare== "1,1,1"){
 
     
-        if (last_state== "1,1,1") {
+        if (states[location]["last_state"]== "1,1,1") {
             console.log("Again 1,1,1");
-            last_state="1,1,1"
+            states[location]["last_state"]="1,1,1"
         }
         //check if last state was also 1,1,1
-        else if (last_state== "0,1,1"){
+        else if (states[location]["last_state"]== "0,1,1"){
             console.log("State changed from partly empty to filled");
-            last_state="1,1,1"
+            states[location]["last_state"]="1,1,1"
             states[location]["replenishment_end"] = payload[i]["time"]
             console.log("STATES:  "+states);
 
@@ -98,30 +97,30 @@ if (pos1, pos2, pos3 != undefined){
         }
         //check if last state was 0,1,1
         else{
-        last_state="1,1,1"
+        states[location]["last_state"]="1,1,1"
         }
     }
     //check for all slots filled
 
     else if(compare == "0,1,1") {
-        if (last_state=="0,1,1") {
+        if (states[location]["last_state"]=="0,1,1") {
             console.log("Again 0,1,1");
-            last_state="0,1,1"
+            states[location]["last_state"]="0,1,1"
         }
         //check if last state was also 0,1,1
 
-        else if(last_state=="1,1,1"){
+        else if(states[location]["last_state"]=="1,1,1"){
             console.log("slot is empty and therefore replenishment timer starts");
             states[location]["replenishment_start"] = payload[i]["time"]
             
-            last_state = "0,1,1"
+            states[location]["last_state"] = "0,1,1"
         }
         //check if slot has emptied
 
-        else if(last_state=="0,0,1"){
+        else if(states[location]["last_state"]=="0,0,1"){
 
         console.log("State changed from partly empty to partly filled");
-            last_state="0,1,1"
+            states[location]["last_state"]="0,1,1"
             states[location]["replenishment_end"] = payload[i]["time"]
 
             rep_time(states, location);
@@ -132,21 +131,21 @@ if (pos1, pos2, pos3 != undefined){
     }
     else if(compare== "0,0,1") {
 
-        if (last_state=="0,0,1") {
+        if (states[location]["last_state"]=="0,0,1") {
             console.log("again 0,0,1");
-            last_state="0,0,1"
+            states[location]["last_state"]="0,0,1"
             
         }
-        else if (last_state=="0,1,1") {
+        else if (states[location]["last_state"]=="0,1,1") {
             console.log("An additional slot has become empty and the replenishment timer starts renewed");
             states[location]["replenishment_start"] = payload[i]["time"]
             
-            last_state="0,0,1"
+            states[location]["last_state"]="0,0,1"
             
         }
-        else if (last_state=="1,1,1") {
+        else if (states[location]["last_state"]=="1,1,1") {
             console.log("state changed from 1,1,1 to 0,0,1 so the replenishment timer has to start again");
-            last_state="0,0,1"
+            states[location]["last_state"]="0,0,1"
             states[location]["replenishment_start"] = payload[i]["time"]
 
             
