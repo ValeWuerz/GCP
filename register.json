@@ -1,0 +1,34 @@
+ [
+{
+    "channel": "CYW",
+    "mode": "slide3",
+    "max" : 3,
+    "min" : 2,
+    
+    "current_state":[],
+    "last_state":[],
+    "replenishment_start": 0,
+    "replenishment_end": 0
+
+
+
+},
+
+{
+    "channel": "PUE",
+    "mode": "slide2",
+    "max" : 2,
+    "min" : 1,
+    
+    "current_state":[],
+    "last_state":[],
+    "replenishment_start": 0,
+    "replenishment_end": 0
+
+
+}
+
+
+
+
+]
