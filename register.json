@@ -7,8 +7,8 @@
     
     "current_state":[],
     "last_state":[],
-    "replenishment_start": 0,
-    "replenishment_end": 0
+    "replenishment_start": [],
+    "replenishment_end": []
 
 
 
@@ -22,8 +22,8 @@
     
     "current_state":[],
     "last_state":[],
-    "replenishment_start": 0,
-    "replenishment_end": 0
+    "replenishment_start": [],
+    "replenishment_end": []
 
 
 }

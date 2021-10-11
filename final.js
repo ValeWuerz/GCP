@@ -90,15 +90,17 @@ if (pos1, pos2, pos3 != undefined){
         else if (states[location]["last_state"]== "0,1,1"){
             console.log("State changed from partly empty to filled");
             states[location]["last_state"]="1,1,1"
-            states[location]["replenishment_end"] = payload[i]["time"]
+            states[location]["replenishment_end"].push(payload[i]["time"])
+            let len=states[location]["replenishment_end"].length
             console.log("STATES:  "+states);
-
-            rep_time(states, location);
+            
+            rep_time(states, location, len);
         }
         //check if last state was 0,1,1
         else{
         states[location]["last_state"]="1,1,1"
         }
+        //include logic for if last state was 001!
     }
     //check for all slots filled
 
@@ -111,7 +113,7 @@ if (pos1, pos2, pos3 != undefined){
 
         else if(states[location]["last_state"]=="1,1,1"){
             console.log("slot is empty and therefore replenishment timer starts");
-            states[location]["replenishment_start"] = payload[i]["time"]
+            states[location]["replenishment_start"].push(payload[i]["time"])
             
             states[location]["last_state"] = "0,1,1"
         }
@@ -121,9 +123,10 @@ if (pos1, pos2, pos3 != undefined){
 
         console.log("State changed from partly empty to partly filled");
             states[location]["last_state"]="0,1,1"
-            states[location]["replenishment_end"] = payload[i]["time"]
+            states[location]["replenishment_end"].push(payload[i]["time"])
+            let len=states[location]["replenishment_end"].length
 
-            rep_time(states, location);
+            rep_time(states, location,len);
         }
         else{
            
@@ -138,7 +141,7 @@ if (pos1, pos2, pos3 != undefined){
         }
         else if (states[location]["last_state"]=="0,1,1") {
             console.log("An additional slot has become empty and the replenishment timer starts renewed");
-            states[location]["replenishment_start"] = payload[i]["time"]
+            states[location]["replenishment_start"].push(payload[i]["time"])
             
             states[location]["last_state"]="0,0,1"
             
@@ -146,7 +149,8 @@ if (pos1, pos2, pos3 != undefined){
         else if (states[location]["last_state"]=="1,1,1") {
             console.log("state changed from 1,1,1 to 0,0,1 so the replenishment timer has to start again");
             states[location]["last_state"]="0,0,1"
-            states[location]["replenishment_start"] = payload[i]["time"]
+            states[location]["replenishment_start"].push(payload[i]["time"])
+            states[location]["replenishment_start"].push(payload[i]["time"])
 
             
         }
@@ -184,8 +188,8 @@ else if (states[location]["mode"]=="bed1") {
 }
 //end of forloop
 })
-function rep_time(states, location){
-
-    let difference= states[location]["replenishment_end"] - states[location]["replenishment_start"];
+function rep_time(states, location, len){
+    let pos_calc=len-1
+    let difference= states[location]["replenishment_end"][pos_calc] - states[location]["replenishment_start"][pos_calc];
     console.log("It is finished and the replenishment time is: "+ difference);
 }
