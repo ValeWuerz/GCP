@@ -9,7 +9,7 @@ let replenishment_end;
 let mode= "slide3";
 
 
-xlsxFile('./test_cases.xlsx',{sheet: 'Normal'}).then((rows) => {
+xlsxFile('./test_cases2.xlsx',{sheet: 'Normal'}).then((rows) => {
  console.table(rows);
  
  for (i in rows){
@@ -213,21 +213,12 @@ else if (states[location]["mode"]=="bed1") {
 })
 function rep_time(states, location, len){
     let pos_calc=len-1
-
-    let end = states[location]["replenishment_end"][pos_calc]
-    let start = states[location]["replenishment_start"][pos_calc]
-    let endTime = zeit(end)
-    let startTime = zeit(start)
-
-    let difference = endTime.getTime() - startTime.getTime()
-    let minutes_diff = Math.floor(difference/1000/60)
-
-    console.log("END: " + end);
-    console.log("START: " + start);
-    console.log("TIMEDIFFERENCE IN Minutes: "+minutes_diff);
-
-    states[location]["rep_durations"].push(minutes_diff)
+    let difference= states[location]["replenishment_end"][pos_calc] - states[location]["replenishment_start"][pos_calc];
+    states[location]["rep_durations"].push(difference)
+    console.log("It is finished and the replenishment time is: "+ difference);
     console.log("DURATION: "+states[location]["rep_durations"]);
+    console.log("END: "+states[location]["replenishment_end"][pos_calc]);
+    console.log("START: "+states[location]["replenishment_start"][pos_calc]);
     //implementieren, dass einträge in rep_start und rep_end an Position pos_calc gelöscht werden, wenn die differenz ausgerechnet wurde
 }
 function calc_num(current_state) {
@@ -238,13 +229,3 @@ function calc_num(current_state) {
     return sum
     
 }
-function zeit(timestring) {
-    
-
-    let stunden = timestring[0] + timestring[1]
-    let minuten = timestring[2] + timestring[3]
-    let sekunden = timestring[4] + timestring[5]
-    let date = new Date(2021, 5, 17, stunden, minuten, sekunden)
-    console.log(date);
-    return date
-    }

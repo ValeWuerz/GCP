@@ -8,7 +8,8 @@
     "current_state":[],
     "last_state":[],
     "replenishment_start": [],
-    "replenishment_end": []
+    "replenishment_end": [],
+    "rep_durations": []
 
 
 
@@ -23,7 +24,9 @@
     "current_state":[],
     "last_state":[],
     "replenishment_start": [],
-    "replenishment_end": []
+    "replenishment_end": [],
+    "rep_durations": []
+
 
 
 }
