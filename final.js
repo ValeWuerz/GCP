@@ -90,6 +90,8 @@ if (pos1, pos2, pos3 != undefined){
         else if (states[location]["last_state"]== "0,1,1"){
             console.log("State changed from partly empty to filled");
             states[location]["last_state"]="1,1,1"
+                          
+            //if condition when min_value is state value
             states[location]["replenishment_end"].push(payload[i]["time"])
             let len=states[location]["replenishment_end"].length
             console.log("STATES:  "+states);
