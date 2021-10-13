@@ -9,7 +9,7 @@ let replenishment_end;
 let mode= "slide3";
 
 
-xlsxFile('./data_modified.xlsx').then((rows) => {
+xlsxFile('./test_cases2.xlsx').then((rows) => {
  console.table(rows);
  
  for (i in rows){
@@ -67,6 +67,8 @@ let pos4 = states[location]["current_state"][3]
 if (states[location]["mode"] == "slide3") {
 let current_state = [pos1, pos2, pos3]
 let compare = current_state.toString()
+let filled= calc_num(current_state)
+
 console.info(current_state);
     
 
@@ -114,8 +116,14 @@ if (pos1, pos2, pos3 != undefined){
         //check if last state was also 0,1,1
 
         else if(states[location]["last_state"]=="1,1,1"){
-            console.log("slot is empty and therefore replenishment timer starts");
-            states[location]["replenishment_start"].push(payload[i]["time"])
+            if (filled=states[location]["min"]) {
+                for (let index = 0; index < filled; index++) {
+                    states[location]["replenishment_start"].push(payload[i]["time"])
+                        
+                    }
+            }
+           
+            console.log("slot is empty and therefore replenishment timer starts " + filled + "times");
             
             states[location]["last_state"] = "0,1,1"
         }
@@ -131,6 +139,7 @@ if (pos1, pos2, pos3 != undefined){
             rep_time(states, location,len);
         }
         else{
+        states[location]["last_state"]="0,1,1"
            
         }
     }
@@ -143,7 +152,14 @@ if (pos1, pos2, pos3 != undefined){
         }
         else if (states[location]["last_state"]=="0,1,1") {
             console.log("An additional slot has become empty and the replenishment timer starts renewed");
-            states[location]["replenishment_start"].push(payload[i]["time"])
+            if (filled=states[location]["min"]) {
+                for (let index = 0; index < filled; index++) {
+                    states[location]["replenishment_start"].push(payload[i]["time"])
+                        
+                    }
+            }
+           
+            console.log("slot is empty and therefore replenishment timer starts " + filled + "times");
             
             states[location]["last_state"]="0,0,1"
             
@@ -192,6 +208,18 @@ else if (states[location]["mode"]=="bed1") {
 })
 function rep_time(states, location, len){
     let pos_calc=len-1
+    console.log("END: "+states[location]["replenishment_end"][pos_calc]);
+    console.log("START:" +states[location]["replenishment_start"][pos_calc]);
+    console.log("LEN: "+len);
+    console.log("STATES: "+ states[location]["replenishment_start"]);
     let difference= states[location]["replenishment_end"][pos_calc] - states[location]["replenishment_start"][pos_calc];
     console.log("It is finished and the replenishment time is: "+ difference);
+}
+function calc_num(current_state) {
+    let sum=0
+    for (let i = 0; i < current_state.length; i++) {
+        sum += current_state[i];
+    }
+    return sum
+    
 }
