@@ -9,7 +9,7 @@ let replenishment_end;
 let mode= "slide3";
 
 
-xlsxFile('./test_cases.xlsx',{sheet: 'Normal'}).then((rows) => {
+xlsxFile('./test_cases.xlsx',{sheet: 'Too_long_1'}).then((rows) => {
  console.table(rows);
  
  for (i in rows){
@@ -68,8 +68,9 @@ if (states[location]["mode"] == "slide3") {
 let current_state = [pos1, pos2, pos3]
 let compare = current_state.toString()
 let filled= calc_num(current_state)
+let channel = states[location]["channel"]
 
-console.info(current_state);
+console.info(channel+": "+current_state);
     
 
 if (pos1, pos2, pos3 != undefined){
@@ -95,9 +96,8 @@ if (pos1, pos2, pos3 != undefined){
                           
             //if condition when min_value is state value
             states[location]["replenishment_end"].push(payload[i]["time"])
-            let len=states[location]["replenishment_end"].length
             
-            rep_time(states, location, len);
+            rep_time(states, location);
         }
         //check if last state was 0,1,1
         else{
@@ -115,17 +115,21 @@ if (pos1, pos2, pos3 != undefined){
         //check if last state was also 0,1,1
 
         else if(states[location]["last_state"]=="1,1,1"){
-            if (filled=states[location]["min"]) {
-                for (let index = 0; index < filled; index++) {
+            if (filled==states[location]["min"]) {
+                for (let index = 0; index < states[location]["max"]-filled; index++) {
+                    console.log("INDEX: "+index);
                     states[location]["replenishment_start"].push(payload[i]["time"])
+                    console.log("STARTED TIMER");
+
                         
                     }
             }
             else if (filled<states[location]["min"]) {
                     states[location]["replenishment_start"].push(payload[i]["time"])
+                    console.log("STARTED TIMER");
+
             }
            
-            console.log("slot is empty and therefore replenishment timer starts " + filled + "times");
             
             states[location]["last_state"] = "0,1,1"
         }
@@ -152,19 +156,32 @@ if (pos1, pos2, pos3 != undefined){
             states[location]["last_state"]="0,0,1"
             
         }
+        else if (states[location]["last_state"]=="0,0,0") {
+
+             console.log("State changed from partly empty to  partly filled");
+            states[location]["last_state"]="0,0,1"
+                          
+            //if condition when min_value is state value
+            states[location]["replenishment_end"].push(payload[i]["time"])
+            
+            rep_time(states, location);
+        }
         else if (states[location]["last_state"]=="0,1,1") {
             console.log("An additional slot has become empty and the replenishment timer starts renewed");
-            if (filled=states[location]["min"]) {
-                for (let index = 0; index < filled; index++) {
+            if (filled==states[location]["min"]) {
+                for (let index = 0; index < states[location]["max"]-filled; index++) {
                     states[location]["replenishment_start"].push(payload[i]["time"])
+                    console.log("STARTED TIMER");
+                    
                         
                     }
             }
             else if (filled<states[location]["min"]) {
                 states[location]["replenishment_start"].push(payload[i]["time"])
+                console.log("STARTED TIMER");
+
         }
            
-            console.log("slot is empty and therefore replenishment timer starts " + filled + "times");
             
             states[location]["last_state"]="0,0,1"
             
@@ -174,6 +191,9 @@ if (pos1, pos2, pos3 != undefined){
             states[location]["last_state"]="0,0,1"
             states[location]["replenishment_start"].push(payload[i]["time"])
             states[location]["replenishment_start"].push(payload[i]["time"])
+            console.log("STARTED TIMER");
+            console.log("STARTED TIMER");
+
 
             
         }
@@ -181,6 +201,35 @@ if (pos1, pos2, pos3 != undefined){
 
 
         //checken ob vorher states 0,0,1; 0,1,1 oder 1,1,1 war
+    }
+    else if(compare == "0,0,0") {
+        if (states[location]["last_state"]=="0,0,0") {
+            console.log("Again 0,0,0");
+            states[location]["last_state"]="0,0,0"
+        }
+        //check if last state was also 0,1,1
+
+        else if(states[location]["last_state"]=="0,0,1"){
+            if (filled==states[location]["min"]) {
+                for (let index = 0; index < states[location]["max"]-filled; index++) {
+                    console.log("INDEX: "+index);
+                    states[location]["replenishment_start"].push(payload[i]["time"])
+                    console.log("STARTED TIMER");
+
+                        
+                    }
+            }
+            else if (filled<states[location]["min"]) {
+                    states[location]["replenishment_start"].push(payload[i]["time"])
+                    console.log("STARTED TIMER");
+
+            }
+           
+            
+            states[location]["last_state"] = "0,0,0"
+        }
+        //check if slot has emptied
+
     }
     //end of switch statement
 }
@@ -211,11 +260,15 @@ else if (states[location]["mode"]=="bed1") {
 }
 //end of forloop
 })
-function rep_time(states, location, len){
+function rep_time(states, location){
+
+    let len=states[location]["replenishment_end"].length
+
     let pos_calc=len-1
 
     let end = states[location]["replenishment_end"][pos_calc]
     let start = states[location]["replenishment_start"][pos_calc]
+
     let endTime = zeit(end)
     let startTime = zeit(start)
 
@@ -228,6 +281,9 @@ function rep_time(states, location, len){
 
     states[location]["rep_durations"].push(minutes_diff)
     console.log("DURATION: "+states[location]["rep_durations"]);
+    console.log("LAST_STATE: "+states[location]["last_state"]);
+    console.log("REP_END: "+states[location]["replenishment_end"]);
+    console.log("REP_START: "+states[location]["replenishment_start"]);
     //implementieren, dass einträge in rep_start und rep_end an Position pos_calc gelöscht werden, wenn die differenz ausgerechnet wurde
 }
 function calc_num(current_state) {

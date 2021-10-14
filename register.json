@@ -29,6 +29,22 @@
 
 
 
+},
+{
+    "channel": "5M9",
+    "mode": "slide3",
+    "max" : 3,
+    "min" : 2,
+    
+    "current_state":[],
+    "last_state":[],
+    "replenishment_start": [],
+    "replenishment_end": [],
+    "rep_durations": []
+
+
+
+
 }
 
 
