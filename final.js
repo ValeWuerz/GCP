@@ -9,7 +9,7 @@ let replenishment_end;
 let mode= "slide3";
 
 
-xlsxFile('./test_cases.xlsx',{sheet: '5h_Consumption'}).then((rows) => {
+xlsxFile('./testing_slots.xlsx',{sheet: 'Sheet1'}).then((rows) => {
  console.table(rows);
  
  for (i in rows){
@@ -35,6 +35,9 @@ for(var i=1;i<payload.length+1;i++){
     let chan= payload[i]["channel"]
     let location= states.findIndex(a=>a.channel == chan)
     let time = payload[i]["time"]
+    let last_state = states[location]["last_state"]
+    let replenishment_end= states[location]["replenishment_end"]
+    let replenishment_start= states[location]["replenishment_start"]
 
         if (payload[i]["position"]==1){
             states[location]["current_state"][0] = payload[i]["state"];
@@ -251,7 +254,61 @@ else{
 }
 }
 else if (states[location]["mode"]=="slide1") {
+
+let current_state = [pos1]
+let compare = current_state.toString()
+let filled= calc_num(current_state)
+let channel = states[location]["channel"]
+
+console.info(channel+": "+current_state);
     
+
+if (pos1 != undefined){
+
+    if (compare == "1") {
+        if (last_state=="1") {
+            console.log("again 1");
+            states[location]["last_state"]="1"
+
+        }
+        else if (last_state=="0") {
+            console.log("empty slot is filled and rep_timer stopped");
+            last_state="1"
+            states[location]["last_state"]="1"
+                          
+            //if condition when min_value is state value
+            states[location]["replenishment_end"].push(time)
+            
+            rep_time(states, location);
+        }
+        else{
+            states[location]["last_state"]="1"
+
+        }
+    }
+else if (compare == "0") {
+    if (last_state=="0") {
+        console.log("again 0");
+        states[location]["last_state"]="0"  
+    }
+    else if(last_state=="1"){
+        console.log("the slot got empty and replenishment-timer starts if this is the minimum");
+        consumption(states, location, time)
+            if (filled==states[location]["min"]) {
+                for (let index = 0; index < states[location]["max"]-filled; index++) {
+                    console.log("INDEX: "+index);
+                    states[location]["replenishment_start"].push(payload[i]["time"])
+                    console.log("STARTED TIMER");
+
+                        
+                    }
+            }
+            states[location]["last_state"]="0"
+
+    }
+}
+  
+}
 }
 else if (states[location]["mode"]=="slide2") {
     let current_state = [pos1, pos2]
@@ -312,6 +369,7 @@ function consumption_time(states, location) {
     console.log("CONSUMPTION END: "+end);
     console.log("CONSUMPTION START: "+start);
     console.log("TIMEDIFFERENCE IN Minutes: "+minutes_diff);
+    
     states[location]["consumption_durations"].push(minutes_diff)
     
 }

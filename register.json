@@ -35,7 +35,8 @@
     "rep_durations": [],
 
     "consumption_start":[],
-    "consumption_end":[]
+    "consumption_end":[],
+    "consumption_durations": []
 
 },
 {
@@ -53,11 +54,31 @@
     "rep_durations": [],
 
     "consumption_start":[],
-    "consumption_end":[]
+    "consumption_end":[],
+    "consumption_durations": []
+
+
+},
+{
+    "channel": "XXX",
+    "mode": "slide1",
+    "max" : 1,
+    "min" : 0,
+    "rep_time_limit": 360,
+
+    
+    "current_state":[],
+    "last_state":[],
+    "replenishment_start": [],
+    "replenishment_end": [],
+    "rep_durations": [],
+
+    "consumption_start":[],
+    "consumption_end":[],
+    "consumption_durations": []
 
 
 }
-
 
 
 
