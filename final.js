@@ -350,6 +350,7 @@ function zeit(timestring) {
     return date
     }
     function auswertung(states) {
+
         let table=[]
         states.forEach(element => {
             let timelimit= element["rep_time_limit"]
@@ -359,7 +360,7 @@ function zeit(timestring) {
             let consumption_hour=[]
             for (let index = 0; index < durations.length; index++) {
                 let tosplit_rep= durations[index]/60
-                let tosplit_con= consumption_durations/60
+                let tosplit_con= consumption_durations[index]/60
                 let splitted_rep = tosplit_rep.toString().split('.')
                 let splitted_con = tosplit_con.toString().split('.')
                 let minutes_rep = splitted_rep[1]*60
