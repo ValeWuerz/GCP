@@ -356,9 +356,16 @@ function zeit(timestring) {
             let durations=element["rep_durations"]
             let durations_hour=[]
             let consumption_durations=element["consumption_durations"]
-            
+            let consumption_hour=[]
             for (let index = 0; index < durations.length; index++) {
-                durations_hour[index]=durations[index]/60
+                let tosplit_rep= durations[index]/60
+                let tosplit_con= consumption_durations/60
+                let splitted_rep = tosplit_rep.toString().split('.')
+                let splitted_con = tosplit_con.toString().split('.')
+                let minutes_rep = splitted_rep[1]*60
+                let minutes_con = splitted_con[1]*60
+                durations_hour[index]=splitted_rep[0] + ':' + minutes_rep.toString().slice(0,2)
+                consumption_hour[index]=splitted_con[0]+':' + minutes_con.toString().slice(0,2)
             }
             let exceeded=0
             let in_time=0
@@ -384,7 +391,7 @@ function zeit(timestring) {
                 this.con_times=con_times
                 
             }
-           let eintrag = new CHANNEL(element["channel"], durations_hour, exceeded,in_time, consumption_durations)
+           let eintrag = new CHANNEL(element["channel"], durations_hour, exceeded,in_time, consumption_hour)
           table.push(eintrag)
             
 
