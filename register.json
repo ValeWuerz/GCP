@@ -4,6 +4,7 @@
     "mode": "slide3",
     "max" : 3,
     "min" : 2,
+    "rep_time_limit": 360,
     
     "current_state":[],
     "last_state":[],
@@ -20,6 +21,8 @@
     "mode": "slide2",
     "max" : 2,
     "min" : 1,
+    "rep_time_limit": 360,
+
     
     "current_state":[],
     "last_state":[],
@@ -35,6 +38,8 @@
     "mode": "slide3",
     "max" : 3,
     "min" : 2,
+    "rep_time_limit": 360,
+
     
     "current_state":[],
     "last_state":[],

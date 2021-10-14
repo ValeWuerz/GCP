@@ -26,7 +26,12 @@ xlsxFile('./test_cases.xlsx',{sheet: 'Too_long_1'}).then((rows) => {
 }).then(()=>{
 //insert data from excel
 let states=register
-for(var i=1;i<payload.length;i++){
+for(var i=1;i<payload.length+1;i++){
+    if (i == payload.length) {
+        console.log("AUSWERTUNG:");
+        auswertung(states);
+        break
+    }
     let chan= payload[i]["channel"]
     let location= states.findIndex(a=>a.channel == chan)
     
@@ -303,4 +308,45 @@ function zeit(timestring) {
     let date = new Date(2021, 5, 17, stunden, minuten, sekunden)
     console.log(date);
     return date
+    }
+    function auswertung(states) {
+        let table=[]
+        states.forEach(element => {
+            let timelimit= element["rep_time_limit"]
+            let durations=element["rep_durations"]
+            let durations_hour=[]
+            
+            for (let index = 0; index < durations.length; index++) {
+                durations_hour[index]=durations[index]/60
+            }
+            let exceeded=0
+            let in_time=0
+            
+            durations.forEach(element =>{
+                if (element>timelimit) {
+                    exceeded=exceeded+1;
+
+                    
+                }
+                else if (element<timelimit) {
+                    in_time=in_time+1
+                    
+                }
+
+            })
+          
+            function CHANNEL(channel, reptimes, exceeded, in_time) {
+                this.channel = channel
+                this.reptimes = reptimes
+                this.exceeded = exceeded
+                this.in_time= in_time
+                
+            }
+           let eintrag = new CHANNEL(element["channel"], durations_hour, exceeded,in_time)
+          table.push(eintrag)
+            
+
+        });
+        console.table(table)
+        
     }
