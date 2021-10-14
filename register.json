@@ -10,7 +10,11 @@
     "last_state":[],
     "replenishment_start": [],
     "replenishment_end": [],
-    "rep_durations": []
+    "rep_durations": [],
+
+    "consumption_start":[],
+    "consumption_end":[],
+    "consumption_durations": []
 
 
 
@@ -28,9 +32,10 @@
     "last_state":[],
     "replenishment_start": [],
     "replenishment_end": [],
-    "rep_durations": []
+    "rep_durations": [],
 
-
+    "consumption_start":[],
+    "consumption_end":[]
 
 },
 {
@@ -45,9 +50,10 @@
     "last_state":[],
     "replenishment_start": [],
     "replenishment_end": [],
-    "rep_durations": []
+    "rep_durations": [],
 
-
+    "consumption_start":[],
+    "consumption_end":[]
 
 
 }

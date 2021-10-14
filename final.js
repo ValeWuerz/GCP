@@ -9,7 +9,7 @@ let replenishment_end;
 let mode= "slide3";
 
 
-xlsxFile('./test_cases.xlsx',{sheet: 'Too_long_1'}).then((rows) => {
+xlsxFile('./test_cases.xlsx',{sheet: '5h_Consumption'}).then((rows) => {
  console.table(rows);
  
  for (i in rows){
@@ -34,7 +34,7 @@ for(var i=1;i<payload.length+1;i++){
     }
     let chan= payload[i]["channel"]
     let location= states.findIndex(a=>a.channel == chan)
-    
+    let time = payload[i]["time"]
 
         if (payload[i]["position"]==1){
             states[location]["current_state"][0] = payload[i]["state"];
@@ -120,6 +120,7 @@ if (pos1, pos2, pos3 != undefined){
         //check if last state was also 0,1,1
 
         else if(states[location]["last_state"]=="1,1,1"){
+            consumption(states, location, time)
             if (filled==states[location]["min"]) {
                 for (let index = 0; index < states[location]["max"]-filled; index++) {
                     console.log("INDEX: "+index);
@@ -173,6 +174,8 @@ if (pos1, pos2, pos3 != undefined){
         }
         else if (states[location]["last_state"]=="0,1,1") {
             console.log("An additional slot has become empty and the replenishment timer starts renewed");
+            consumption(states, location, time)
+
             if (filled==states[location]["min"]) {
                 for (let index = 0; index < states[location]["max"]-filled; index++) {
                     states[location]["replenishment_start"].push(payload[i]["time"])
@@ -215,6 +218,8 @@ if (pos1, pos2, pos3 != undefined){
         //check if last state was also 0,1,1
 
         else if(states[location]["last_state"]=="0,0,1"){
+            consumption(states, location, time)
+
             if (filled==states[location]["min"]) {
                 for (let index = 0; index < states[location]["max"]-filled; index++) {
                     console.log("INDEX: "+index);
@@ -291,6 +296,41 @@ function rep_time(states, location){
     console.log("REP_START: "+states[location]["replenishment_start"]);
     //implementieren, dass einträge in rep_start und rep_end an Position pos_calc gelöscht werden, wenn die differenz ausgerechnet wurde
 }
+function consumption_time(states, location) {
+
+    let len=states[location]["consumption_end"].length
+    let pos_calc=len-1
+    
+    let end = states[location]["consumption_end"][pos_calc]
+    let start = states[location]["consumption_start"][pos_calc]
+
+    let endTime = zeit(end)
+    let startTime = zeit(start)
+
+    let difference = endTime.getTime() - startTime.getTime()
+    let minutes_diff = Math.floor(difference/1000/60)
+    console.log("CONSUMPTION END: "+end);
+    console.log("CONSUMPTION START: "+start);
+    console.log("TIMEDIFFERENCE IN Minutes: "+minutes_diff);
+    states[location]["consumption_durations"].push(minutes_diff)
+    
+}
+function consumption(states, location, time) {
+    if (states[location]["consumption_start"][0]==undefined) {
+        console.log("FIRST CONSUMPTION");
+        states[location]["consumption_start"].push(time)
+
+            }
+    else{
+        states[location]["consumption_start"].push(time)
+        console.log("CONSUMPTION START");
+        console.log("CONSUMPTION END");
+        states[location]["consumption_end"].push(time)
+        consumption_time(states, location)
+
+    }
+    
+}
 function calc_num(current_state) {
     let sum=0
     for (let i = 0; i < current_state.length; i++) {
@@ -315,6 +355,7 @@ function zeit(timestring) {
             let timelimit= element["rep_time_limit"]
             let durations=element["rep_durations"]
             let durations_hour=[]
+            let consumption_durations=element["consumption_durations"]
             
             for (let index = 0; index < durations.length; index++) {
                 durations_hour[index]=durations[index]/60
@@ -335,14 +376,15 @@ function zeit(timestring) {
 
             })
           
-            function CHANNEL(channel, reptimes, exceeded, in_time) {
+            function CHANNEL(channel, reptimes, exceeded, in_time, con_times) {
                 this.channel = channel
                 this.reptimes = reptimes
                 this.exceeded = exceeded
                 this.in_time= in_time
+                this.con_times=con_times
                 
             }
-           let eintrag = new CHANNEL(element["channel"], durations_hour, exceeded,in_time)
+           let eintrag = new CHANNEL(element["channel"], durations_hour, exceeded,in_time, consumption_durations)
           table.push(eintrag)
             
 
