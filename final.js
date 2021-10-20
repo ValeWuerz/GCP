@@ -7,9 +7,13 @@ let payload = [];
 let replenishment_start;
 let replenishment_end;
 let mode= "slide3";
+let files= ['./11_10_2021.xlsx']
+for (let index = 0; index < files.length; index++) {
+    file_analysis(files[index])
+}
 
-
-xlsxFile('./14_10_2021.xlsx',{sheet: 'PDM_OWNER_AD_Z2L3SEN'}).then((rows) => {
+function file_analysis(file) {
+xlsxFile('./11_10_2021.xlsx',{sheet: 'PDM_OWNER_AD_Z2L3SEN'}).then((rows) => {
  console.table(rows);
  
  for (i in rows){
@@ -434,8 +438,10 @@ else if (states[location]["mode"]=="bed1") {
 //check for mode of the logistic system
 
 }
+
 //end of forloop
 })
+}
 function rep_time(states, location){
 
     let len=states[location]["replenishment_end"].length
@@ -535,8 +541,9 @@ function zeit(timestring) {
             for (let index = 0; index < consumption_durations.length; index++) {
                 let tosplit_con= consumption_durations[index]/60
                 let splitted_con = tosplit_con.toString().split('.')
-                let minutes_con = splitted_con[1]*60
-                consumption_hour[index]=splitted_con[0]+':' + minutes_con.toString().slice(0,2)
+                let minutes_con = ('0.'+splitted_con[1])*60
+                let final_minutes = minutes_con * 10
+                consumption_hour[index]=splitted_con[0]+':' + final_minutes.toString().slice(0,2)
                 console.log(consumption_hour);
             }
             let exceeded=0
@@ -555,15 +562,15 @@ function zeit(timestring) {
 
             })
           
-            function CHANNEL(channel, reptimes, exceeded, in_time, con_times) {
+            function CHANNEL(channel, reptimes, exceeded, in_time, con_minutes) {
                 this.channel = channel
                 this.reptimes = reptimes
                 this.exceeded = exceeded
                 this.in_time= in_time
-                this.consumption_times_in_hours=con_times
+                this.conminutes=con_minutes
                 
             }
-           let eintrag = new CHANNEL(element["channel"], durations_hour, exceeded,in_time, consumption_hour)
+           let eintrag = new CHANNEL(element["channel"], durations_hour, exceeded,in_time,  consumption_durations)
           table.push(eintrag)
             
 
