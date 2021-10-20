@@ -1,5 +1,6 @@
 const register = require('./new_register.json')
 
 let states=register
+let location= states.findIndex(a=>a.channel == "IG8")
 
-console.log(states[100]["channel"]);
+console.log(location);

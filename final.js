@@ -1,5 +1,5 @@
 const xlsxFile = require('read-excel-file/node');
-const register = require('./register.json')
+const register = require('./new_register.json')
 
 
 let payload = [];
@@ -9,16 +9,16 @@ let replenishment_end;
 let mode= "slide3";
 
 
-xlsxFile('./testing_slots.xlsx',{sheet: 'Slide2'}).then((rows) => {
+xlsxFile('./14_10_2021.xlsx',{sheet: 'PDM_OWNER_AD_Z2L3SEN'}).then((rows) => {
  console.table(rows);
  
  for (i in rows){
     for (j in rows[i]){
         payload[i] = {
-            time: rows[i][1],
-            position: rows[i][3],
-            state: rows[i][4],
-            channel: rows[i][2]
+            time: rows[i][2],
+            position: rows[i][5],
+            state: rows[i][6],
+            channel: rows[i][3]
 
         }
     }
@@ -34,6 +34,10 @@ for(var i=1;i<payload.length+1;i++){
     }
     let chan= payload[i]["channel"]
     let location= states.findIndex(a=>a.channel == chan)
+    if (location==-1) {
+        continue;
+        
+    }
     let time = payload[i]["time"]
     let last_state = states[location]["last_state"]
     let replenishment_end= states[location]["replenishment_end"]
@@ -105,7 +109,7 @@ if (pos1, pos2, pos3 != undefined){
             //if condition when min_value is state value
             states[location]["replenishment_end"].push(payload[i]["time"])
             
-            rep_time(states, location);
+            //rep_time(states, location);
         }
         //check if last state was 0,1,1
         else{
@@ -151,7 +155,7 @@ if (pos1, pos2, pos3 != undefined){
             states[location]["replenishment_end"].push(payload[i]["time"])
             let len=states[location]["replenishment_end"].length
 
-            rep_time(states, location,len);
+            //rep_time(states, location,len);
         }
         else{
         states[location]["last_state"]="0,1,1"
@@ -173,7 +177,7 @@ if (pos1, pos2, pos3 != undefined){
             //if condition when min_value is state value
             states[location]["replenishment_end"].push(payload[i]["time"])
             
-            rep_time(states, location);
+            //rep_time(states, location);
         }
         else if (states[location]["last_state"]=="0,1,1") {
             console.log("An additional slot has become empty and the replenishment timer starts renewed");
@@ -279,7 +283,7 @@ if (pos1 != undefined){
             //if condition when min_value is state value
             states[location]["replenishment_end"].push(time)
             
-            rep_time(states, location);
+            //rep_time(states, location);
         }
         else{
             states[location]["last_state"]="1"
@@ -340,7 +344,7 @@ else if (states[location]["mode"]=="slide2") {
                 //if condition when min_value is state value
                 states[location]["replenishment_end"].push(time)
                 
-                rep_time(states, location);
+                //rep_time(states, location);
             }
             else{
                 states[location]["last_state"]="1,1"
@@ -375,7 +379,7 @@ else if (states[location]["mode"]=="slide2") {
                 //if condition when min_value is state value
                 states[location]["replenishment_end"].push(time)
                 
-                rep_time(states, location);
+                //rep_time(states, location);
             
         }
         else{
@@ -524,13 +528,16 @@ function zeit(timestring) {
             let consumption_hour=[]
             for (let index = 0; index < durations.length; index++) {
                 let tosplit_rep= durations[index]/60
-                let tosplit_con= consumption_durations[index]/60
                 let splitted_rep = tosplit_rep.toString().split('.')
-                let splitted_con = tosplit_con.toString().split('.')
                 let minutes_rep = splitted_rep[1]*60
-                let minutes_con = splitted_con[1]*60
                 durations_hour[index]=splitted_rep[0] + ':' + minutes_rep.toString().slice(0,2)
+            }
+            for (let index = 0; index < consumption_durations.length; index++) {
+                let tosplit_con= consumption_durations[index]/60
+                let splitted_con = tosplit_con.toString().split('.')
+                let minutes_con = splitted_con[1]*60
                 consumption_hour[index]=splitted_con[0]+':' + minutes_con.toString().slice(0,2)
+                console.log(consumption_hour);
             }
             let exceeded=0
             let in_time=0
@@ -553,7 +560,7 @@ function zeit(timestring) {
                 this.reptimes = reptimes
                 this.exceeded = exceeded
                 this.in_time= in_time
-                this.con_times=con_times
+                this.consumption_times_in_hours=con_times
                 
             }
            let eintrag = new CHANNEL(element["channel"], durations_hour, exceeded,in_time, consumption_hour)
