@@ -1,19 +1,21 @@
 const xlsxFile = require('read-excel-file/node');
 const register = require('./new_register.json')
-
+const ObjectsToCsv = require('objects-to-csv')
 
 let payload = [];
 
 let replenishment_start;
 let replenishment_end;
 let mode= "slide3";
-let files= ['./11_10_2021.xlsx']
+let states=register
+
+let files= ['./11-14_comb.xlsx']
 for (let index = 0; index < files.length; index++) {
     file_analysis(files[index])
 }
 
 function file_analysis(file) {
-xlsxFile('./11_10_2021.xlsx',{sheet: 'PDM_OWNER_AD_Z2L3SEN'}).then((rows) => {
+xlsxFile(file,{sheet: 'Sheet1'}).then((rows) => {
  console.table(rows);
  
  for (i in rows){
@@ -22,14 +24,14 @@ xlsxFile('./11_10_2021.xlsx',{sheet: 'PDM_OWNER_AD_Z2L3SEN'}).then((rows) => {
             time: rows[i][2],
             position: rows[i][5],
             state: rows[i][6],
-            channel: rows[i][3]
+            channel: rows[i][3],
+            day: rows[i][1]
 
         }
     }
 }
 }).then(()=>{
 //insert data from excel
-let states=register
 for(var i=1;i<payload.length+1;i++){
     if (i == payload.length) {
         console.log("AUSWERTUNG:");
@@ -43,6 +45,8 @@ for(var i=1;i<payload.length+1;i++){
         
     }
     let time = payload[i]["time"]
+    let day = payload[i]["day"]
+    console.log("TAG: "+day);
     let last_state = states[location]["last_state"]
     let replenishment_end= states[location]["replenishment_end"]
     let replenishment_start= states[location]["replenishment_start"]
@@ -131,7 +135,7 @@ if (pos1, pos2, pos3 != undefined){
         //check if last state was also 0,1,1
 
         else if(states[location]["last_state"]=="1,1,1"){
-            consumption(states, location, time)
+            consumption(states, location, time, day)
             if (filled==states[location]["min"]) {
                 for (let index = 0; index < states[location]["max"]-filled; index++) {
                     console.log("INDEX: "+index);
@@ -185,7 +189,7 @@ if (pos1, pos2, pos3 != undefined){
         }
         else if (states[location]["last_state"]=="0,1,1") {
             console.log("An additional slot has become empty and the replenishment timer starts renewed");
-            consumption(states, location, time)
+            consumption(states, location, time, day)
 
             if (filled==states[location]["min"]) {
                 for (let index = 0; index < states[location]["max"]-filled; index++) {
@@ -229,7 +233,7 @@ if (pos1, pos2, pos3 != undefined){
         //check if last state was also 0,1,1
 
         else if(states[location]["last_state"]=="0,0,1"){
-            consumption(states, location, time)
+            consumption(states, location, time, day)
 
             if (filled==states[location]["min"]) {
                 for (let index = 0; index < states[location]["max"]-filled; index++) {
@@ -301,7 +305,7 @@ else if (compare == "0") {
     }
     else if(last_state=="1"){
         console.log("the slot got empty and replenishment-timer starts if this is the minimum");
-        consumption(states, location, time)
+        consumption(states, location, time, day)
             if (filled==states[location]["min"]) {
                 for (let index = 0; index < states[location]["max"]-filled; index++) {
                     console.log("INDEX: "+index);
@@ -362,7 +366,7 @@ else if (states[location]["mode"]=="slide2") {
         }
         else if(last_state=="1,1"){
             console.log("the slot got empty and replenishment-timer starts if this is the minimum");
-            consumption(states, location, time)
+            consumption(states, location, time, day)
                 if (filled==states[location]["min"]) {
                     for (let index = 0; index < states[location]["max"]-filled; index++) {
                         console.log("INDEX: "+index);
@@ -400,7 +404,7 @@ else if (states[location]["mode"]=="slide2") {
             }
             else if (last_state=="0,1") {
                 console.log("the slot got empty and replenishment-timer starts if this is the minimum");
-            consumption(states, location, time)
+            consumption(states, location, time, day)
                 if (filled==states[location]["min"]) {
                     for (let index = 0; index < states[location]["max"]-filled; index++) {
                         console.log("INDEX: "+index);
@@ -475,10 +479,12 @@ function consumption_time(states, location) {
     
     let end = states[location]["consumption_end"][pos_calc]
     let start = states[location]["consumption_start"][pos_calc]
+    let con_endday=states[location]["con_endday"][pos_calc]
+    let con_startday=states[location]["con_startday"][pos_calc]
 
-    let endTime = zeit(end)
+    let endTime = zeit(end, con_endday)
     
-    let startTime = zeit(start)
+    let startTime = zeit(start, con_startday)
 
     let difference = endTime.getTime() - startTime.getTime()
     let minutes_diff = Math.floor(difference/1000/60)
@@ -489,17 +495,21 @@ function consumption_time(states, location) {
     states[location]["consumption_durations"].push(minutes_diff)
     
 }
-function consumption(states, location, time) {
+function consumption(states, location, time, day) {
     if (states[location]["consumption_start"][0]==undefined) {
         console.log("FIRST CONSUMPTION");
         states[location]["consumption_start"].push(time)
+        states[location]["con_startday"].push(day)
 
             }
     else{
         states[location]["consumption_start"].push(time)
+        states[location]["con_startday"].push(day)
+
         console.log("CONSUMPTION START");
         console.log("CONSUMPTION END");
         states[location]["consumption_end"].push(time)
+        states[location]["con_endday"].push(day)
         consumption_time(states, location)
 
     }
@@ -513,13 +523,13 @@ function calc_num(current_state) {
     return sum
     
 }
-function zeit(timestring) {
+function zeit(timestring, day) {
     
 
     let stunden = timestring[0] + timestring[1]
     let minuten = timestring[2] + timestring[3]
     let sekunden = timestring[4] + timestring[5]
-    let date = new Date(2021, 5, 17, stunden, minuten, sekunden)
+    let date = new Date(2021, 5, day, stunden, minuten, sekunden)
     console.log(date);
     return date
     }
@@ -576,5 +586,7 @@ function zeit(timestring) {
 
         });
         console.table(table)
-        
+        console.log(states[126]["consumption_durations"]);
+        const csv = new ObjectsToCsv(states)
+        csv.toDisk('./array.csv')
     }

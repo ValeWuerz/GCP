@@ -39,6 +39,9 @@ xlsxFile('./test.xlsx',{sheet: 'Sheet1'}).then((rows) => {
 
     "consumption_start":[],
     "consumption_end":[],
+    "con_endday":[],
+    "con_startday":[],
+
     "consumption_durations": []
    }
 register.push(channel)
