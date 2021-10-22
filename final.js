@@ -1,5 +1,7 @@
 const xlsxFile = require('read-excel-file/node');
 const register = require('./new_register.json')
+const XLSX = require('xlsx')
+
 const ObjectsToCsv = require('objects-to-csv')
 
 let payload = [];
@@ -533,7 +535,65 @@ function zeit(timestring, day) {
     console.log(date);
     return date
     }
-    function auswertung(states) {
+ function analysis_excel(state) {
+for (let index = 0; index < state.length; index++) {
+
+    if (state[index]["consumption_end"][0]==undefined) {
+        state.splice(index, 1)
+        index=0
+
+        console.log("removed");
+
+    }
+   delete state[index]["replenishment_start"]
+   delete state[index]["rep_durations"]
+   delete state[index]["consumption_start"]
+   delete state[index]["replenishment_end"]
+   delete state[index]["con_endday"]
+   delete state[index]["con_startday"]
+   delete state[index]["rep_time_limit"]
+   delete state[index]["current_state"]
+  // let average_duration=averaging(state[index]["consumption_durations"])
+   //state[index]["con_average"]=average_duration
+/* if (state[index]["consumption_end"]==undefined) {
+    continue
+    
+}
+else{
+    for (let i = 0; i < state[index]["consumption_end"].length; i++) {
+        state[index]["con_end"+i] = state[index]["consumption_end"][i]
+        state[index]["con_durations"+i]= state[index]["consumption_durations"][i]
+       
+    }
+} */
+   /* 
+  delete state[index]["consumption_durations"]
+  delete state[index]["consumption_end"]
+ */
+   
+  
+    
+}
+
+    const ws = XLSX.utils.json_to_sheet(state)
+    const wb = XLSX.utils.book_new()
+    XLSX.utils.book_append_sheet(wb, ws, 'Responses')
+    XLSX.writeFile(wb, 'sampleData.export.xlsx')
+    
+
+        
+    }
+    function averaging(durations) {
+        let length = durations.length
+        let sum;
+        let average;
+        for (let index = 0; index < durations.length; index++) {
+            sum + durations[index]
+        }
+        average=sum/length
+        
+    }
+    function auswertung(stat) {
 
         let table=[]
         states.forEach(element => {
@@ -580,13 +640,19 @@ function zeit(timestring, day) {
                 this.conminutes=con_minutes
                 
             }
+        
            let eintrag = new CHANNEL(element["channel"], durations_hour, exceeded,in_time,  consumption_durations)
           table.push(eintrag)
             
 
         });
         console.table(table)
-        console.log(states[126]["consumption_durations"]);
-        const csv = new ObjectsToCsv(states)
-        csv.toDisk('./array.csv')
+
+analysis_excel(states);     
+        
+
+      /*   const csv = new ObjectsToCsv(states)
+        csv.toDisk('./array.csv') */
+
+
     }
