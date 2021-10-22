@@ -582,10 +582,10 @@ for (let index = 0; index < state.length; index++) {
     delete state[index]["consumption_durations"]
   
 }
- /*    const ws = XLSX.utils.json_to_sheet(state)
+     const ws = XLSX.utils.json_to_sheet(state)
     const wb = XLSX.utils.book_new()
     XLSX.utils.book_append_sheet(wb, ws, 'Responses')
-    XLSX.writeFile(wb, 'sampleData.export.xlsx') */
+    XLSX.writeFile(wb, 'sampleData.export.xlsx')
     
 
         
@@ -655,7 +655,7 @@ for (let index = 0; index < state.length; index++) {
 
         });
         console.table(table)
-//analysis_excel(states);     
+analysis_excel(states);     
         
 
       /*   const csv = new ObjectsToCsv(states)
