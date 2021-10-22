@@ -42,6 +42,7 @@ for(var i=1;i<payload.length+1;i++){
     }
     let chan= payload[i]["channel"]
     let location= states.findIndex(a=>a.channel == chan)
+   
     if (location==-1) {
         continue;
         
@@ -498,11 +499,14 @@ function consumption_time(states, location) {
     
 }
 function consumption(states, location, time, day) {
+    if (location==7) {
+        console.log("NMM");
+    }
     if (states[location]["consumption_start"][0]==undefined) {
         console.log("FIRST CONSUMPTION");
         states[location]["consumption_start"].push(time)
         states[location]["con_startday"].push(day)
-
+    
             }
     else{
         states[location]["consumption_start"].push(time)
@@ -542,7 +546,6 @@ for (let index = 0; index < state.length; index++) {
         state.splice(index, 1)
         index=0
 
-        console.log("removed");
 
     }
    delete state[index]["replenishment_start"]
@@ -553,9 +556,9 @@ for (let index = 0; index < state.length; index++) {
    delete state[index]["con_startday"]
    delete state[index]["rep_time_limit"]
    delete state[index]["current_state"]
-  // let average_duration=averaging(state[index]["consumption_durations"])
-   //state[index]["con_average"]=average_duration
-/* if (state[index]["consumption_end"]==undefined) {
+   let average_duration=averaging(state[index]["consumption_durations"])
+  state[index]["con_average"]=average_duration
+if (state[index]["consumption_end"]==undefined) {
     continue
     
 }
@@ -565,7 +568,7 @@ else{
         state[index]["con_durations"+i]= state[index]["consumption_durations"][i]
        
     }
-} */
+}
    /* 
   delete state[index]["consumption_durations"]
   delete state[index]["consumption_end"]
@@ -574,24 +577,29 @@ else{
   
     
 }
-
-    const ws = XLSX.utils.json_to_sheet(state)
+for (let index = 0; index < state.length; index++) {
+    delete state[index]["consumption_end"]
+    delete state[index]["consumption_durations"]
+  
+}
+ /*    const ws = XLSX.utils.json_to_sheet(state)
     const wb = XLSX.utils.book_new()
     XLSX.utils.book_append_sheet(wb, ws, 'Responses')
-    XLSX.writeFile(wb, 'sampleData.export.xlsx')
+    XLSX.writeFile(wb, 'sampleData.export.xlsx') */
     
 
         
     }
     function averaging(durations) {
         let length = durations.length
-        let sum;
+        let sum=0;
         let average;
         for (let index = 0; index < durations.length; index++) {
-            sum + durations[index]
+            sum= sum + durations[index]
         }
+
         average=sum/length
-        
+        return average
     }
     function auswertung(stat) {
 
@@ -647,8 +655,7 @@ else{
 
         });
         console.table(table)
-
-analysis_excel(states);     
+//analysis_excel(states);     
         
 
       /*   const csv = new ObjectsToCsv(states)
