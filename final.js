@@ -557,7 +557,11 @@ for (let index = 0; index < state.length; index++) {
    delete state[index]["rep_time_limit"]
    delete state[index]["current_state"]
    let average_duration=averaging(state[index]["consumption_durations"])
+   let median_duration=medianizise(state[index]["consumption_durations"])
+  state[index]["counter"]=state[index]["consumption_durations"].length
+
   state[index]["con_average"]=average_duration
+  state[index]["con_median"]=median_duration
 if (state[index]["consumption_end"]==undefined) {
     continue
     
@@ -588,6 +592,17 @@ for (let index = 0; index < state.length; index++) {
     XLSX.writeFile(wb, 'sampleData.export.xlsx')
     
 
+        
+    }
+    function medianizise(data) {
+        
+const arrSort = data.sort();
+let len=data.length
+const mid = Math.ceil(len / 2);
+
+const median =
+  len % 2 == 0 ? (arrSort[mid] + arrSort[mid - 1]) / 2 : arrSort[mid - 1];
+return median
         
     }
     function averaging(durations) {
