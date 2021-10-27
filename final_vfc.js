@@ -1,12 +1,5 @@
-const xlsxFile = require('read-excel-file/node');
-const register = require('./new_register.json')
-const XLSX = require('xlsx')
-
-const ObjectsToCsv = require('objects-to-csv')
-
-let payload = [];
-
-let states=register
+let payload = msg.payload[0];
+let states=msg.payload[1]
 
 let files= ['./11-14_comb.xlsx']
 for (let index = 0; index < files.length; index++) {
@@ -14,7 +7,7 @@ for (let index = 0; index < files.length; index++) {
 }
 
 function file_analysis(file) {
-xlsxFile(file,{sheet: 'Sheet1'}).then((rows) => {
+/* xlsxFile(file,{sheet: 'Sheet1'}).then((rows) => {
  console.table(rows);
  
  for (i in rows){
@@ -29,7 +22,7 @@ xlsxFile(file,{sheet: 'Sheet1'}).then((rows) => {
         }
     }
 }
-}).then(()=>{
+}).then(()=>{ */
 //insert data from excel
 for(var i=1;i<payload.length+1;i++){
     if (i == payload.length) {
@@ -90,7 +83,7 @@ let compare = current_state.toString()
 let filled= calc_num(current_state)
 let channel = states[location]["channel"]
 
-console.info(channel+": "+current_state);
+console.log(channel+": "+current_state);
     
 
 if (pos1, pos2, pos3 != undefined){
@@ -272,7 +265,7 @@ let compare = current_state.toString()
 let filled= calc_num(current_state)
 let channel = states[location]["channel"]
 
-console.info(channel+": "+current_state);
+console.log(channel+": "+current_state);
     
 
 if (pos1 != undefined){
@@ -328,7 +321,7 @@ else if (states[location]["mode"]=="slide2") {
     let filled= calc_num(current_state)
     let channel = states[location]["channel"]
     
-    console.info(channel+": "+current_state);
+    console.log(channel+": "+current_state);
         
     
     if (pos1,pos2 != undefined){
@@ -444,7 +437,7 @@ else if (states[location]["mode"]=="bed1") {
 }
 
 //end of forloop
-})
+/* }) */
 }
 function rep_time(states, location){
 
@@ -470,7 +463,6 @@ function rep_time(states, location){
     console.log("LAST_STATE: "+states[location]["last_state"]);
     console.log("REP_END: "+states[location]["replenishment_end"]);
     console.log("REP_START: "+states[location]["replenishment_start"]);
-    //implementieren, dass einträge in rep_start und rep_end an Position pos_calc gelöscht werden, wenn die differenz ausgerechnet wurde
 }
 function consumption_time(states, location) {
 
@@ -500,10 +492,12 @@ function consumption(states, location, time, day) {
         console.log("NMM");
     }
     if (states[location]["consumption_start"][0]==undefined) {
-        
         console.log("FIRST CONSUMPTION");
+        console.log(states[location])
         states[location]["consumption_start"].push(time)
+        console.log("test")
         states[location]["con_startday"].push(day)
+       
     
             }
     else{
@@ -537,61 +531,7 @@ function zeit(timestring, day) {
     console.log(date);
     return date
     }
- function analysis_excel(state) {
-for (let index = 0; index < state.length; index++) {
-
-    if (state[index]["consumption_end"][0]==undefined) {
-        state.splice(index, 1)
-        index=0
-
-
-    }
-   delete state[index]["replenishment_start"]
-   delete state[index]["rep_durations"]
-   delete state[index]["consumption_start"]
-   delete state[index]["replenishment_end"]
-   delete state[index]["con_endday"]
-   delete state[index]["con_startday"]
-   delete state[index]["rep_time_limit"]
-   delete state[index]["current_state"]
-   let average_duration=averaging(state[index]["consumption_durations"])
-   let median_duration=medianizise(state[index]["consumption_durations"])
-  state[index]["counter"]=state[index]["consumption_durations"].length
-
-  state[index]["con_average"]=average_duration
-  state[index]["con_median"]=median_duration
-if (state[index]["consumption_end"]==undefined) {
-    continue
-    
-}
-else{
-    for (let i = 0; i < state[index]["consumption_end"].length; i++) {
-        state[index]["con_end"+i] = state[index]["consumption_end"][i]
-        state[index]["con_durations"+i]= state[index]["consumption_durations"][i]
-       
-    }
-}
-   /* 
-  delete state[index]["consumption_durations"]
-  delete state[index]["consumption_end"]
- */
-   
-  
-    
-}
-for (let index = 0; index < state.length; index++) {
-    delete state[index]["consumption_end"]
-    delete state[index]["consumption_durations"]
-  
-}
-     const ws = XLSX.utils.json_to_sheet(state)
-    const wb = XLSX.utils.book_new()
-    XLSX.utils.book_append_sheet(wb, ws, 'Responses')
-    XLSX.writeFile(wb, 'sampleData.export.xlsx')
-    
-
-        
-    }
+//analysis_excel function
     function medianizise(data) {
         
 const arrSort = data.sort();
@@ -667,8 +607,61 @@ return median
             
 
         });
-        console.table(table)
-analysis_excel(states);     
+       
+        //console.table(table)
+         function analysis_excel(state) {
+for (let index = 0; index < state.length; index++) {
+
+    if (state[index]["consumption_end"][0]==undefined) {
+        state.splice(index, 1)
+        index=0
+
+
+    }
+   delete state[index]["replenishment_start"]
+   delete state[index]["rep_durations"]
+   delete state[index]["consumption_start"]
+   delete state[index]["replenishment_end"]
+   delete state[index]["con_endday"]
+   delete state[index]["con_startday"]
+   delete state[index]["rep_time_limit"]
+   delete state[index]["current_state"]
+   let average_duration=averaging(state[index]["consumption_durations"])
+   let median_duration=medianizise(state[index]["consumption_durations"])
+  state[index]["counter"]=state[index]["consumption_durations"].length
+
+  state[index]["con_average"]=average_duration
+  state[index]["con_median"]=median_duration
+if (state[index]["consumption_end"]==undefined) {
+    continue
+    
+}
+else{
+    for (let i = 0; i < state[index]["consumption_end"].length; i++) {
+        state[index]["con_end"+i] = state[index]["consumption_end"][i]
+        state[index]["con_durations"+i]= state[index]["consumption_durations"][i]
+       
+    }
+}
+   /* 
+  delete state[index]["consumption_durations"]
+  delete state[index]["consumption_end"]
+ */
+   
+  
+    
+}
+for (let index = 0; index < state.length; index++) {
+    delete state[index]["consumption_end"]
+    delete state[index]["consumption_durations"]
+  
+}
+  
+
+        
+    }
+    analysis_excel(states);    
+    console.log(states)
         
 
       /*   const csv = new ObjectsToCsv(states)
@@ -676,3 +669,4 @@ analysis_excel(states);
 
 
     }
+return msg;
