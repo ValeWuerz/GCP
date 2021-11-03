@@ -40,6 +40,6 @@ register.push(channel)
 
    }
    let data = JSON.stringify(register);
-   fs.writeFileSync('11-14_vfc.json', data);
+   fs.writeFileSync('11-14_elected.json', data);
 
 })

@@ -1,0 +1,33 @@
+[
+    {
+        "erstes": 5,
+        "zweites": 20,
+        "drittes": 55,
+        "_time": 1
+    },
+    {
+        "erstes": 7,
+        "zweites": 25,
+        "drittes": 70,
+        "_time": 2
+    },
+    {
+        "erstes": 6,
+        "zweites": 30,
+        "drittes": 40,
+        "_time": 3
+
+    },
+    {
+        "erstes": 10,
+        "zweites": 25,
+        "drittes": 20,
+        "_time": 4
+    },
+    {
+        "erstes": 3,
+        "zweites": 20,
+        "drittes": 10,
+        "_time": 5
+    }
+]
