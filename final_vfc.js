@@ -428,8 +428,67 @@ else if (states[location]["mode"]=="slide2") {
 else if (states[location]["mode"]=="slide4") {
     
 }
-else if (states[location]["mode"]=="bed1") {
+else if (states[location]["mode"]=="bodenroller1"||"bodenroller2"||"bodenroller3"||"bodenroller4"||"bodenroller5"||"bodenroller6"||"bodenroller7"||"bodenroller8"||"bodenroller9"||"bodenroller10") {
+    let current_state = []
+
+let slots= states[location]["max"]
+for (let index = 0; index < slots; index++) {
+   current_state.push(pos + `${index}`)
     
+}
+let compare = current_state.toString()
+let filled= calc_num(current_state)
+let channel = states[location]["channel"]
+
+console.log(channel+": "+current_state);
+    
+
+if (pos1 != undefined){
+
+    if (compare == "1") {
+        if (last_state=="1") {
+            console.log("again 1");
+            states[location]["last_state"]="1"
+
+        }
+        else if (last_state=="0") {
+            console.log("empty slot is filled and rep_timer stopped");
+            last_state="1"
+            states[location]["last_state"]="1"
+                          
+            //if condition when min_value is state value
+            states[location]["replenishment_end"].push(time)
+            
+            //rep_time(states, location);
+        }
+        else{
+            states[location]["last_state"]="1"
+
+        }
+    }
+else if (compare == "0") {
+    if (last_state=="0") {
+        console.log("again 0");
+        states[location]["last_state"]="0"  
+    }
+    else if(last_state=="1"){
+        console.log("the slot got empty and replenishment-timer starts if this is the minimum");
+        consumption(states, location, time, day)
+            if (filled==states[location]["min"]) {
+                for (let index = 0; index < states[location]["max"]-filled; index++) {
+                    console.log("INDEX: "+index);
+                    states[location]["replenishment_start"].push(payload[i]["time"])
+                    console.log("STARTED TIMER");
+
+                        
+                    }
+            }
+            states[location]["last_state"]="0"
+
+    }
+}
+  
+}
 }
 
 //check for mode of the logistic system

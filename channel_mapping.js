@@ -3,7 +3,7 @@ const xlsxFile = require('read-excel-file/node');
 
 let payload=[]
 let register=[]
-xlsxFile('./test.xlsx',{sheet: 'Sheet1'}).then((rows) => {
+xlsxFile('./SampleDataGCP/PDM_OWNER_AD_Z2L3VKK.xlsx',{sheet: 'PDM_OWNER_AD_Z2L3VKK'}).then((rows) => {
     console.table(rows);
     
     for (i in rows){
@@ -11,7 +11,8 @@ xlsxFile('./test.xlsx',{sheet: 'Sheet1'}).then((rows) => {
            payload[i] = {
              
                channel: rows[i][8],
-               max: rows[i][6]
+               max: rows[i][6],
+               max_roll: rows[i][7]
    
            }
        }
@@ -23,11 +24,16 @@ xlsxFile('./test.xlsx',{sheet: 'Sheet1'}).then((rows) => {
         console.log(payload[i]);
     let name=payload[i]["channel"]
     let mode= "slide"+ payload[i]["max"]
-
+    let max = payload[i]["max"]
+if (max==0) {
+    mode="bodenroller"+payload[i]["max_roll"];
+    max=payload[i]["max_roll"]
+    
+}
     let channel = {
     "channel": name,
     "mode": mode,
-    "max" : payload[i]["max"],
+    "max" : max,
     "min" : 1,
     "rep_time_limit": 360,
     

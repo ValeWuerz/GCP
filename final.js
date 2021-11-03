@@ -83,6 +83,8 @@ let pos1 = states[location]["current_state"][0]
 let pos2 = states[location]["current_state"][1]
 let pos3 = states[location]["current_state"][2]
 let pos4 = states[location]["current_state"][3]
+let pos5, pos6, pos7, pos8, pos9, pos10
+
 
 if (states[location]["mode"] == "slide3") {
 let current_state = [pos1, pos2, pos3]
@@ -435,9 +437,37 @@ else if (states[location]["mode"]=="slide2") {
 else if (states[location]["mode"]=="slide4") {
     
 }
-else if (states[location]["mode"]=="bed1") {
+
+else if (states[location]["mode"]=="bodenroller1"||"bodenroller2"||"bodenroller3"||"bodenroller4"||"bodenroller5"||"bodenroller6"||"bodenroller7"||"bodenroller8"||"bodenroller9"||"bodenroller10") {
+        let current_state = []
     
-}
+    let slots= states[location]["max"]
+    for (let index = 0; index < slots; index++) {
+        let counter= index+1
+        current_state.push(eval(`pos`+counter))
+        console.log("CURRENT: "+current_state);
+       
+        
+    }
+    console.log("CURRENT: "+current_state);
+    if (states[location]["channel"]=="AWO") {
+        console.log("TEST: "+states[location]["channel"]);
+    }
+    let compare = current_state.toString()
+    let filled= calc_num(current_state)
+    let channel = states[location]["channel"]
+    let last_filled= calc_num(parseInt(states[location]["last_state"]))
+    console.log(channel+": "+current_state);
+        
+    if (states[location]["last_state"]>filled) {
+        console.log("IT IS TRUE");
+        consumption(states, location, time, day)
+
+    }
+    states[location]["last_state"]=filled
+   
+    }  
+
 
 //check for mode of the logistic system
 
@@ -496,11 +526,9 @@ function consumption_time(states, location) {
     
 }
 function consumption(states, location, time, day) {
-    if (location==7) {
-        console.log("NMM");
-    }
+    
     if (states[location]["consumption_start"][0]==undefined) {
-        
+
         console.log("FIRST CONSUMPTION");
         states[location]["consumption_start"].push(time)
         states[location]["con_startday"].push(day)
@@ -522,7 +550,13 @@ function consumption(states, location, time, day) {
 function calc_num(current_state) {
     let sum=0
     for (let i = 0; i < current_state.length; i++) {
-        sum += current_state[i];
+        if (current_state[i]==undefined) {
+            sum +=0
+        }
+        else{
+            sum += current_state[i];
+
+        }
     }
     return sum
     
